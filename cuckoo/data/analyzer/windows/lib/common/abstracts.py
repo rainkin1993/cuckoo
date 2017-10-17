@@ -190,6 +190,7 @@ class Auxiliary(object):
     def __init__(self, options={}, analyzer=None):
         self.options = options
         self.analyzer = analyzer
+        self.pids = []
 
     def init(self):
         pass
@@ -199,3 +200,9 @@ class Auxiliary(object):
 
     def stop(self):
         pass
+
+    def set_pids(self, pids):
+        """Update list of monitored PIDs return by the package.
+        @param pids: list of pids.
+        """
+        self.pids = pids

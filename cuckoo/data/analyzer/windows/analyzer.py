@@ -648,6 +648,13 @@ class Analyzer(object):
         # analysis package fails, we have to abort the analysis.
         pids = self.package.start(self.target)
 
+        # Walk through the enabled auxiliary modules
+        for aux in aux_enabled:
+            # Update the lists of PIDS return by package
+            # note that if new child processes are created by package model,
+            # it will not be updated to auxiliary model
+            aux.set_pids(pids)
+
         # If the analysis package returned a list of process identifiers, we
         # add them to the list of monitored processes and enable the process monitor.
         if pids:
