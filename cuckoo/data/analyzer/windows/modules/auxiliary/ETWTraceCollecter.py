@@ -14,8 +14,8 @@ from lib.common.results import upload_to_host
 class ETWTraceCollecter(Auxiliary):
     """Allow ETWTraceCollecter to be run on the side."""
 
-    def __init__(self):
-        super(ETWTraceCollecter, self).__init__()
+    def __init__(self, options={}, analyzer=None):
+        super(ETWTraceCollecter, self).__init__(options, analyzer)
 
         self.etw_path = self.options.get("etw_path")
 
@@ -75,8 +75,12 @@ class ETWTraceCollecter(Auxiliary):
         # Stop etw collecter
         call([self.etw_exe_name, "-stop"])
 
+        # Keep the type of pids consistent to iterable structure
+        pid_list = []
+        if not isinstance(self.pids, (tuple, list)):
+            pid_list.append(self.pids)
         # Parse the output.bin and filter by pid
-        for pid in self.pids:
+        for pid in pid_list:
             pid_output_dir_path = os.path.join(self.output_dir_name, str(pid))
             os.mkdir(pid_output_dir_path)
             call([
@@ -103,8 +107,10 @@ class ETWTraceCollecter(Auxiliary):
                 archive.write(os.path.join(dirpath, filename))
         archive.close()
 
+        # Return back to the original working path
+        os.chdir(curdir)
+
         # Upload the results to the host
         upload_to_host(archive_path, os.path.join("files", self.archive_name))
 
-        # Return back to the original working path
-        os.chdir(curdir)
+
