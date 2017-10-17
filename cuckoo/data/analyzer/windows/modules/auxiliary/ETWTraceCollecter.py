@@ -91,18 +91,26 @@ class ETWTraceCollecter(Auxiliary):
                 pid_output_dir_path
             ])
 
-        # Correct the wrong format data
-        call([
-            "python",
-            self.preprocess_script_name,
-            self.output_dir_name,
-            self.corrected_output_dir_name
-        ])
+        is_syscall_only = False
+        if "syscall_only" in self.options:
+             is_syscall_only = bool(self.options["syscall_only"])
+
+        # Check which version user want to run
+        if not is_syscall_only:
+            # If it needs events, orrect the wrong format data
+            # else nothing need to be done
+            call([
+                "python",
+                self.preprocess_script_name,
+                self.output_dir_name,
+                self.corrected_output_dir_name
+            ])
 
         # Compress the results as a zip file
         archive_path = os.path.join(self.etw_path, self.archive_name)
         archive = ZipFile(archive_path, 'w')
-        for dirpath, dirnames, filenames in os.walk(self.corrected_output_dir_name):
+        final_result_dir_path = self.output_dir_name if is_syscall_only else self.corrected_output_dir_name
+        for dirpath, dirnames, filenames in os.walk(final_result_dir_path):
             for filename in filenames:
                 archive.write(os.path.join(dirpath, filename))
         archive.close()
