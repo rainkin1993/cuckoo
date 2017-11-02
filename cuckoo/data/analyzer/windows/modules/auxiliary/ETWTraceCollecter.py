@@ -9,7 +9,9 @@ from subprocess import call
 from lib.common.abstracts import Auxiliary
 from lib.common.exceptions import CuckooPackageError, CuckooDisableModule, CuckooError
 from lib.common.results import upload_to_host
+import  logging
 
+log = logging.getLogger(__name__)
 
 class ETWTraceCollecter(Auxiliary):
     """Allow ETWTraceCollecter to be run on the side."""
@@ -63,6 +65,7 @@ class ETWTraceCollecter(Auxiliary):
         os.chdir(self.etw_path)
         call([self.etw_exe_name, "-start"])
         os.chdir(curdir)
+        log.debug("Successfully start the etw collecter")
 
     def stop(self):
         """Stop the etw collecter, preprocess the output,
@@ -74,6 +77,7 @@ class ETWTraceCollecter(Auxiliary):
 
         # Stop etw collecter
         call([self.etw_exe_name, "-stop"])
+        log.debug("Successfully stop the etw collecter")
 
         # Keep the type of pids consistent to iterable structure
         pid_list = []
@@ -92,6 +96,7 @@ class ETWTraceCollecter(Auxiliary):
                 self.addressmap_name,
                 pid_output_dir_path
             ])
+            log.debug("Successfully parse the output for pid {pid}".format(pid=pid))
 
         is_syscall_only = False
         if "syscall_only" in self.options:
@@ -116,11 +121,13 @@ class ETWTraceCollecter(Auxiliary):
             for filename in filenames:
                 archive.write(os.path.join(dirpath, filename))
         archive.close()
+        log.debug("Successfully compress the final output")
 
         # Return back to the original working path
         os.chdir(curdir)
 
         # Upload the results to the host
         upload_to_host(archive_path, os.path.join("files", self.archive_name))
+        log.debug("Successfully upload to the result server")
 
 
