@@ -79,6 +79,8 @@ class ETWTraceCollecter(Auxiliary):
         pid_list = []
         if not isinstance(self.pids, (tuple, list)):
             pid_list.append(self.pids)
+        else:
+            pid_list = self.pids
         # Parse the output.bin and filter by pid
         for pid in pid_list:
             pid_output_dir_path = os.path.join(self.output_dir_name, str(pid))
