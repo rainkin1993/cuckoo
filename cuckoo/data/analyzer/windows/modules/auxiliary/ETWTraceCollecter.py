@@ -4,7 +4,7 @@
 
 import os
 
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 from subprocess import call
 from lib.common.abstracts import Auxiliary
 from lib.common.exceptions import CuckooPackageError, CuckooDisableModule, CuckooError
@@ -108,7 +108,7 @@ class ETWTraceCollecter(Auxiliary):
 
         # Compress the results as a zip file
         archive_path = os.path.join(self.etw_path, self.archive_name)
-        archive = ZipFile(archive_path, 'w')
+        archive = ZipFile(archive_path, 'w', ZIP_DEFLATED)
         final_result_dir_path = self.output_dir_name if is_syscall_only else self.corrected_output_dir_name
         for dirpath, dirnames, filenames in os.walk(final_result_dir_path):
             for filename in filenames:
