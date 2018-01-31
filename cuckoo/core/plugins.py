@@ -98,6 +98,7 @@ class RunAuxiliary(object):
                 return
 
             module_name = inspect.getmodule(current).__name__
+            log.debug("module_name is %s", module_name)
             if "." in module_name:
                 module_name = module_name.rsplit(".", 1)[1]
 
@@ -209,6 +210,7 @@ class RunProcessing(object):
             module_name = module_name.rsplit(".", 1)[1]
 
         try:
+            #log.debug("module_name is %s", module_name)
             options = config2("processing", module_name)
         except CuckooConfigurationError:
             log.debug(

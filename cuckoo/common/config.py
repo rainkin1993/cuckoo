@@ -630,6 +630,9 @@ class Config(object):
                 "force": Boolean(False),
                 "url": String(),
             },
+            "windowinfo": {
+                "enabled": Boolean(True),
+            }
         },
         "qemu": {
             "qemu": {
@@ -1106,26 +1109,29 @@ def config(s, cfg=None, strict=False, raw=False, loose=False, check=False):
     return value
 
 def get_section_types(file_name, section, strict=False):
+    #log.debug("!!!!!!!!!")
     if section in Config.configuration.get(file_name, {}):
         return Config.configuration[file_name][section]
-
+    #log.debug("!!!!!!!!!")
     if "__star__" not in Config.configuration.get(file_name, {}):
         return {}
-
+    #log.debug("?????????")
     if strict:
         section_, key = Config.configuration[file_name]["__star__"]
         if section not in config("%s:%s:%s" % (file_name, section_, key)):
             return {}
-
+    #log.debug("@@@@@@@@@@")
     if "*" in Config.configuration.get(file_name, {}):
         section_types = Config.configuration[file_name]["*"]
         # If multiple default values have been provided, pick one.
         if isinstance(section_types, (tuple, list)):
             section_types = section_types[0]
         return section_types
+    #log.debug("***********")
     return {}
 
 def config2(file_name, section):
+    #log.debug("!!!!!!!!!")
     keys = get_section_types(file_name, section, strict=True)
     if not keys:
         raise CuckooConfigurationError(

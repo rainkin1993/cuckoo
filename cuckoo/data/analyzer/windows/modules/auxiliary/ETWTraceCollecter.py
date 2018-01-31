@@ -14,6 +14,7 @@ from shutil import copy
 
 log = logging.getLogger(__name__)
 
+
 class ETWTraceCollecter(Auxiliary):
     """Allow ETWTraceCollecter to be run on the side."""
 
