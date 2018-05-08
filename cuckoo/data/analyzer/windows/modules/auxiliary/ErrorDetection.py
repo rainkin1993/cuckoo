@@ -65,8 +65,16 @@ def _WindowEnum(hwnd, extra):
         win.hwnd = hwnd
         win.classname = win32gui.GetClassName(hwnd)
         win.text = win32gui.GetWindowText(hwnd)
+        try:
+            win.text.encode('utf-8')
+        except BaseException:
+            win.text = "There are some characters cannot be encoded!"
         win.staticicon = win32gui.SendMessage(hwnd, win32con.STM_GETICON)
         win.tid, win.pid = win32process.GetWindowThreadProcessId(hwnd)
+        try:
+            win.owner = win32gui.GetWindow(hwnd, win32con.GW_OWNER)
+        except:
+            win.owner = None
         win.owner = win32gui.GetWindow(hwnd, win32con.GW_OWNER)
         if win32gui.IsWindowVisible(hwnd):
             win.isvisible = True
@@ -99,19 +107,22 @@ def EnumMsgOnlyWin():
     return msg_only_wins
 
 def run(path, msgwin, rootwin):
-    init_check = False
+    init_check = True
     windows = {}
-    while True:
-        win32gui.EnumWindows(_WindowEnum, (windows, init_check, rootwin))
-        msg_only_wins = EnumMsgOnlyWin()
-        init_check = False
-        window_info = open(path, 'w')
-        window_info.write(WindowEncoder().encode(rootwin))
-        window_info.close()
-        msg_only_window = open(msgwin, 'w')
-        msg_only_window.write(str(msg_only_wins))
-        msg_only_window.close()
-        time.sleep(1)
+    try:
+        while True:
+            win32gui.EnumWindows(_WindowEnum, (windows, init_check, rootwin))
+            msg_only_wins = EnumMsgOnlyWin()
+            init_check = False
+            window_info = open(path, 'w')
+            window_info.write(WindowEncoder().encode(rootwin))
+            window_info.close()
+            msg_only_window = open(msgwin, 'w')
+            msg_only_window.write(str(msg_only_wins))
+            msg_only_window.close()
+            time.sleep(1)
+    except UnicodeError:
+        window_info.write("Unicode error!\n")
 
 
 class ErrorDetection(Auxiliary):

@@ -85,9 +85,10 @@ class WindowInfo(Processing):
         self.hasvisible = False
         try:
             with open(join(self.analysis_path, "files", "window_info.txt"), "r") as fp:
-                if len(fp.readline().strip(' \n')) == 0:
-                    return
-                self.rootwin = self.parse_json(load(fp))
+                '''if len(fp.readline().strip(' \n')) == 0:
+                    return'''
+                tmp = load(fp)
+                self.rootwin = self.parse_json(tmp)
                 self.find_owner(self.rootwin)
                 self.check_win_info(self.rootwin)
         except IOError:
