@@ -6,6 +6,7 @@
 import os
 import shutil
 import logging
+import subprocess
 
 from zipfile import ZipFile, BadZipfile
 
@@ -81,6 +82,20 @@ class Zip(Package):
 
         zipinfos = self.get_infos(path)
         self.extract_zip(path, self.curdir, password)
+
+        if self.options.get("autogui"):
+            autogui_path = os.path.join(self.curdir, "RAT", self.options.get("autogui"))
+            controlled_path = os.path.join(self.curdir, "RAT", "controlled.exe")
+            darkcomet_path = os.path.join(self.curdir, "RAT", "darkcomet.exe")
+            if os.path.exists(autogui_path) and os.path.exists(controlled_path) and os.path.exists(darkcomet_path):
+                args = [self.curdir, ]
+                self.execute(darkcomet_path, [])
+                pid = self.execute(controlled_path, [])
+                args = ["python", autogui_path, self.curdir]
+                subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+                # os.system("python " + autogui_path + " " + self.curdir)
+                log.debug("autogui: " + autogui_path)
+                return pid
 
         file_name = self.options.get("file")
         # If no file name is provided via option, take the first file.

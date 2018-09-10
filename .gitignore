@@ -38,3 +38,5 @@ cuckoo/private/.cwd
 node_modules/
 bower_components/
 .sass-cache/
+
+utils/
